@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Olimpo Pixelado</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e9e3f7;--ink:#1b1038;--ts:1;--ff:'Pixelify Sans',monospace,sans-serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e0a1e;--ink:#f3eaff}}
+:root[data-theme="dark"]{--bg:#0e0a1e;--ink:#f3eaff}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--ff);display:flex;align-items:center;justify-content:center;overflow:hidden}
+#w{position:relative;width:min(100vw,calc(100vh*16/9));aspect-ratio:16/9;container-type:inline-size;background:#1b1038;user-select:none;-webkit-user-select:none}
+canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
+.hd{position:absolute;top:1.4cqw;font-size:calc(2.1cqw*var(--ts));color:#fff4d0;background:#a8631f;border:.4cqw solid #5a2a0b;padding:.5cqw 1.2cqw;pointer-events:none}
+#hud{left:2cqw}#help{top:auto;bottom:1.4cqw;left:2cqw;text-align:left;color:#f3eaff}
+.ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(40,25,10,.55)}
+.ov[hidden]{display:none}
+.box{width:92%;height:90%;box-sizing:border-box;background:#fbe3a8;border:.9cqw solid #6b2d0a;box-shadow:0 0 0 .6cqw #d98f3a,0 0 0 1.2cqw #6b2d0a,1.6cqw 1.6cqw 0 1.2cqw #0006;padding:2cqw 3.2cqw;color:#4a220a;display:flex;flex-direction:column;gap:1.6cqw;overflow:auto}
+.box.sm{height:auto;max-width:70%}
+.top{display:flex;gap:2cqw;align-items:stretch}
+#pt{width:12cqw;height:auto;border:.6cqw solid #6b2d0a;image-rendering:pixelated;flex:none}
+.bd{flex:1;background:#2e5444;border:.7cqw solid #8a5a2b;box-shadow:inset 0 0 0 .3cqw #1f3a2e;color:#f4f1e4;padding:1.2cqw 2cqw}
+.nm{display:inline-block;background:#fbe3a8;color:#4a220a;font-size:calc(2cqw*var(--ts));padding:.2cqw 1.2cqw;border:.4cqw solid #6b2d0a;margin-bottom:.8cqw}
+.box h2{margin:0;font-size:calc(3.6cqw*var(--ts));line-height:1.1}
+.bd h2{color:#fff6c8}
+.box.sm h2{color:#6b2d0a}
+.sub{font-size:calc(2.1cqw*var(--ts));color:#bfe8c8}
+.box p{margin:0;font-size:calc(3cqw*var(--ts));line-height:1.45;flex:1}
+.row{display:flex;gap:2cqw;justify-content:flex-end;align-items:center;margin-top:auto}
+#pn{margin-right:auto;font-size:calc(2cqw*var(--ts));color:#8a5a2b}
+.ov button{font:inherit;font-size:calc(2.4cqw*var(--ts));background:#e8a64a;color:#4a220a;border:.4cqw solid #6b2d0a;padding:.8cqw 2.2cqw;box-shadow:0 .5cqw 0 #a8631f;cursor:pointer}
+.ov button.alt{background:#bfe3c0}
+button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible,canvas:focus-visible,h1:focus-visible{outline:3px solid #ffd23a;outline-offset:2px;box-shadow:0 0 0 2px #000}
+.box:focus{outline:none}
+.sr,.skip:not(:focus){position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:fixed;top:8px;left:8px;z-index:9;background:#ffd23a;color:#000;padding:10px 14px;font-weight:700}
+#bar{position:absolute;top:1.4cqw;right:2cqw;display:flex;gap:1cqw}
+#bar button{font:inherit;font-size:calc(2.1cqw*var(--ts));background:#a8631f;color:#fff4d0;border:.4cqw solid #5a2a0b;padding:.5cqw 1.2cqw;min-height:44px;cursor:pointer}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:1cqw 3cqw}
+@media (max-width:640px){.grid{grid-template-columns:1fr}}
+.box label{display:flex;align-items:center;gap:1cqw;font-size:calc(2.4cqw*var(--ts))}
+.box input[type=checkbox]{width:max(2.6cqw,22px);height:max(2.6cqw,22px)}
+.box select{font:inherit;font-size:calc(2.2cqw*var(--ts));padding:.5cqw;min-height:44px}
+.box h3{margin:.5cqw 0;font-size:calc(2.6cqw*var(--ts))}
+#kb,.r2{display:flex;flex-wrap:wrap;gap:1cqw}
+#kb button,.r2 button{font-size:calc(2cqw*var(--ts));padding:.5cqw 1.4cqw;min-height:44px}
+body.rm{display:block;overflow:auto;height:auto}
+body.rm #w{display:none}
+#rd{max-width:72ch;margin:0 auto;padding:20px;font-size:calc(1.15rem*var(--ts));line-height:1.65}
+#rd[hidden]{display:none}
+#rd h1,#rd h2{line-height:1.2}
+#rd fieldset{margin:12px 0;border:2px solid currentColor;padding:10px}
+#rd label{display:block;padding:6px 0}
+#rd input{width:22px;height:22px;margin-right:8px}
+#rd button{font:inherit;padding:10px 16px;border:2px solid currentColor;background:#ffd23a;color:#000;cursor:pointer;min-height:44px;margin:8px 0}
+:root.lf{--ff:'Atkinson Hyperlegible',Verdana,sans-serif}
+:root.hc{--bg:#000;--ink:#fff}
+.hc .ov{background:rgba(0,0,0,.88)}
+.hc .box{background:#fff;color:#000;border-color:#000;box-shadow:0 0 0 .6cqw #fff,0 0 0 1.2cqw #000}
+.hc .box h2,.hc .box.sm h2,.hc #pn,.hc #qh{color:#000}
+.hc .bd{background:#000;border-color:#fff}
+.hc .bd h2,.hc .bd .sub{color:#fff}
+.hc .nm{background:#fff;color:#000;border-color:#000}
+.hc .ov button,.hc #bar button{background:#ffe600;color:#000;border-color:#000}
+.hc .ov button.alt{background:#fff}
+.hc .hd{background:#000;color:#fff;border-color:#fff}
+.hc canvas{filter:contrast(1.4) saturate(1.3)}
+.hc #qo .ok{background:#5f5;color:#000}
+.hc #qo .no{background:#f66;color:#000}
+.box.sm{max-width:78%}
+#qh{font-size:calc(2.1cqw*var(--ts));color:#8a5a2b}
+#qo button{display:block;width:100%;text-align:left;margin:.9cqw 0}
+#qo .ok{background:#8fd98f}
+#qo .no{background:#f19a8a}
+#qe{min-height:3cqw;font-size:calc(2.4cqw*var(--ts))}
+#tc{display:none;position:absolute;left:2cqw;right:2cqw;bottom:2cqw;justify-content:space-between}
+#tc div{display:flex;gap:2cqw}
+#tc button{width:max(13cqw,48px);height:max(13cqw,48px);font:inherit;font-size:calc(5cqw*var(--ts));background:#ffffff33;color:#fff;border:.5cqw solid #fff9;touch-action:none}
+@media (pointer:coarse){#tc{display:flex}#help{display:none}}
+#ht{position:absolute;left:50%;top:9cqw;transform:translateX(-50%);width:max-content;max-width:84%;box-sizing:border-box;font-size:calc(2.4cqw*var(--ts));line-height:1.3;color:#fff4d0;background:#2e5444;border:.4cqw solid #fbe3a8;box-shadow:0 .5cqw 0 #0006;padding:.8cqw 1.6cqw;text-align:center;pointer-events:none}
+#ht[hidden]{display:none}
+#ti{align-items:flex-end;background:rgba(40,25,10,.7)}
+.box.tt{height:84%;margin-bottom:2cqw;gap:1.1cqw;text-align:center}
+.tt .tb{padding:.8cqw 2cqw}
+.box h1{margin:0;font-size:calc(5.4cqw*var(--ts));line-height:1.1;color:#fff6c8}
+.tt .sub{font-size:calc(2cqw*var(--ts))}
+.tt .wl{font-size:calc(2.5cqw*var(--ts));line-height:1.35;flex:none}
+#tg{display:flex;justify-content:center;gap:1.4cqw}
+#tg div{display:flex;flex-direction:column;align-items:center;gap:.4cqw;font-size:calc(1.9cqw*var(--ts));color:#4a220a}
+#tg canvas{width:7.6cqw;height:auto;border:.4cqw solid #6b2d0a;image-rendering:pixelated}
+.tt .cols{display:grid;grid-template-columns:1fr 1.25fr;gap:1.6cqw;text-align:left;flex:none}
+.tt .cols section{background:#fff3c8;border:.4cqw solid #8a5a2b;padding:.8cqw 1.4cqw}
+.tt h3{margin:0 0 .4cqw;font-size:calc(2.3cqw*var(--ts));color:#6b2d0a}
+.tt .cols p,.tt .cols li{font-size:calc(1.9cqw*var(--ts));line-height:1.35;flex:none;margin:0}
+.tt ul{margin:0;padding-left:2cqw}
+.tt kbd{font:inherit;background:#fbe3a8;border:.2cqw solid #6b2d0a;padding:0 .5cqw}
+.tt .row{justify-content:center}
+#tp{font-size:calc(3cqw*var(--ts))!important;padding:.8cqw 4cqw!important}
+#w:has(#ti:not([hidden])) #bar{z-index:3}
+.hc .box h1{color:#fff}
+.hc .tt .cols section{background:#fff;border-color:#000}
+.hc #ht{background:#000;color:#fff;border-color:#fff}
+</style></head><body>
+</a>
+<a class="skip" id="sk" href="#rd">Pular para o modo de leitura (versão em texto, para leitores de tela)</a>
+<div id="lv" class="sr" aria-live="polite"></div>
+<div id="w">
+<div id="ht" hidden aria-hidden="true"></div>
+<div id="bar"><button id="bm">⚙ Menu</button><button id="bl">📖 Modo leitura</button></div>
+<canvas id="c" width="320" height="180" tabindex="0" role="img" aria-label="Jogo de plataforma em pixel art ambientado em Atenas, com seis professores da mitologia grega. Setas ou A e D movem, Espaço pula, X dá um impulso, E conversa. Para uma versão em texto, use o modo de leitura."></canvas>
+<div class="hd" id="hud">Aulas assistidas: <b id="cnt">0</b>/6</div>
+<div class="hd" id="help">Setas/AD mover · Espaço pular · X dash<br>Clique nos professores (ou E) · H: dica · Esc: menu</div>
+<div id="tc"><div><button data-k="l" aria-label="Esquerda">◀</button><button data-k="r" aria-label="Direita">▶</button></div><div><button data-k="d" aria-label="Dash">»</button><button id="th" data-k="h" aria-label="Dica">?</button><button data-k="j" aria-label="Pular">▲</button></div></div>
+<div class="ov" id="ti"><div class="box tt"><div class="bd tb"><h1 id="tt">Olimpo Pixelado</h1><div class="sub">Uma jornada pela mitologia grega</div></div>
+<p class="wl">Bem-vindo, aluno! Deuses, heróis e titãs estão esperando para contar as histórias que moldaram a Grécia Antiga.</p>
+<div id="tg" role="list" aria-label="Os seis professores do jogo"></div>
+<div class="cols"><section><h3>🎯 Objetivo</h3><p>Percorra a cidade e converse com os 6 professores para assistir a todas as aulas. Chegue ao Templo no fim da fase e faça o quiz para provar o que aprendeu e ganhar o seu título!</p></section>
+<section><h3>🎮 Guia rápido</h3><ul><li><kbd>← →</kbd> ou <kbd>A D</kbd>: andar</li><li><kbd>Espaço</kbd>: pular (segure para ir mais alto) · <kbd>X</kbd>: dash</li><li><kbd>E</kbd> ou clique: conversar com o professor</li><li><kbd>H</kbd>: dica · <kbd>Esc</kbd>: menu</li></ul></section></div>
+<div class="row"><button id="tp">▶ Jogar</button></div></div></div>
+<div class="ov" id="md" hidden><div class="box"><div class="top"><canvas id="pt" width="15" height="22" aria-hidden="true"></canvas><div class="bd"><div class="nm" id="nm"></div><h2 id="mt"></h2><div class="sub" id="ms"></div></div></div><p id="mb" aria-hidden="true"></p><div class="sr" id="ml" aria-live="polite"></div><div class="row"><span id="pn"></span><button class="alt" id="mp">◀ Voltar</button><button id="mc">Próximo ▶</button><button class="alt" id="mx">Sair</button></div></div></div>
+<div class="ov" id="ed" hidden><div class="box sm"><h2 id="eh">Obrigado por jogar!</h2><p id="en"></p><div class="row"><button id="eq">Fazer o quiz</button><button class="alt" id="ec">Continuar explorando</button><button class="alt" id="er">Jogar de novo</button></div></div></div>
+<div class="ov" id="qz" hidden><div class="box sm"><div id="qh"></div><h2 id="qq"></h2><div id="qo" role="group" aria-label="Alternativas"></div><p id="qe" role="status"></p><div class="row"><button id="qn">Próxima ▶</button></div></div></div>
+<div class="ov" id="st" hidden><div class="box"><h2 id="sth">Menu e acessibilidade (jogo pausado)</h2>
+<div class="grid"><label><input type="checkbox" id="o-hc"> Alto contraste</label><label><input type="checkbox" id="o-lf"> Fonte legível (dislexia)</label><label><input type="checkbox" id="o-rm"> Reduzir movimento</label><label><input type="checkbox" id="o-as"> Modo assistido: dash ilimitado, movimento mais lento, pulo maior e, ao cair, volta à última plataforma</label>
+<label>Tamanho do texto <select id="o-ts"><option value="1">Normal</option><option value="1.25">Grande</option><option value="1.5">Muito grande</option></select></label>
+<label>Velocidade do texto <select id="o-sp"><option value="n">Normal</option><option value="l">Lenta</option><option value="i">Instantânea</option></select></label></div>
+<h3>Teclas (clique e pressione a nova tecla)</h3><div id="kb"></div>
+<div class="r2"><button class="alt" id="kp">Teclas padrão</button><button class="alt" id="kl">Só mão esquerda</button><button class="alt" id="kr">Só mão direita</button></div>
+<div class="row"><button class="alt" id="sv">Apagar progresso</button><button id="sx">Voltar ao jogo</button></div></div></div>
+</div>
+<main id="rd" hidden aria-label="Modo de leitura"><div id="rc"></div></main>
+<script>
+const $=i=>document.getElementById(i),cv=$('c'),g=cv.getContext('2d');g.imageSmoothingEnabled=false;
+const W=320,H=180,WW=2520;
+const PL=[[0,140,230],[260,128,40],[330,116,40],[400,106,170],[600,96,36],[666,84,36],[732,120,170],[932,108,36],[998,120,36],[1064,100,36],[1130,116,190],[1350,104,36],[1416,92,36],[1482,80,36],[1556,80,170],[1756,92,36],[1822,104,36],[1888,116,36],[1954,128,566]].map(([x,y,w])=>({x,y,w,h:300}));
+const S=[
+{x:150,p:0,d:dMino,t:'O Minotauro e a Casa de Asterion',s:'Creta · Labirinto de Cnossos',
+b:'O rei Minos de Creta recebeu de Poseidon um touro magnífico, mas não o sacrificou como havia prometido. Como castigo, sua esposa Pasífae deu à luz Asterion, uma criatura com corpo de homem e cabeça de touro: o Minotauro. Minos mandou o inventor Dédalo construir o Labirinto para prendê-lo. Em certos relatos, a cada nove anos jovens atenienses eram enviados como tributo ao monstro, até que o herói Teseu entrou no labirinto, venceu a fera e encontrou a saída seguindo o fio que eu lhe dei.',
+f:'Asterion significa "o estrelado". Esse era o verdadeiro nome do Minotauro.'},
+{x:480,p:3,d:dZeus,t:'Zeus e o Monte Olimpo',s:'O rei dos deuses',
+b:'Zeus, filho dos titãs Cronos e Reia, escapou de ser devorado pelo pai. Quando cresceu, libertou seus irmãos e liderou os deuses na Titanomaquia, a grande guerra contra os titãs. Vitorioso, repartiu o mundo: Zeus ficou com o céu, Poseidon com os mares e Hades com o submundo. Seu símbolo é o raio, forjado pelos Ciclopes. Dali, os doze olimpianos governavam deuses e mortais do alto do Monte Olimpo.',
+f:'O Olimpo existe de verdade! Fica na Grécia e, com 2.917 metros, é a montanha mais alta do país.'},
+{x:810,p:6,d:dPan,t:'Pandora e a Jarra dos Males',s:'A primeira mulher mortal',
+b:'Depois que Prometeu roubou o fogo, Zeus quis punir a humanidade. Ordenou que Hefesto moldasse Pandora, a quem os deuses concederam vários dons. Ela recebeu uma jarra (pithos) com a ordem de jamais abri-la. Movida pela curiosidade, Pandora a destampou, e de dentro escaparam as doenças, o trabalho árduo, a dor e todos os males do mundo. Somente a Esperança (Elpis) ficou presa no fundo da jarra.',
+f:'A expressão "caixa de Pandora" nasceu de um erro de tradução: no grego original, era uma jarra.'},
+{x:1215,p:10,d:dHorse,t:'O Cavalo de Troia',s:'A guerra que durou dez anos',
+b:'Por dez anos os gregos cercaram Troia, depois que Páris levou Helena, esposa do rei Menelau. Então eu, Odisseu, tive uma ideia: construir um enorme cavalo de madeira e deixá-lo diante dos portões como oferenda aos deuses, enquanto a frota grega fingia ir embora. Dentro do cavalo, soldados esperavam escondidos. Os troianos levaram o "presente" para a cidade e festejaram. Durante a noite, os guerreiros saíram, abriram os portões e Troia caiu.',
+f:'Daí vem a expressão "presente de grego": uma oferta que esconde um perigo.'},
+{x:1640,p:14,d:dProm,t:'Prometeu e o Fogo',s:'O titã que amava a humanidade',
+b:'Eu sou um titã e sempre me compadeci dos humanos. Quando Zeus escondeu o fogo dos mortais, eu o roubei dentro de uma haste de erva-doce e o entreguei à humanidade, ensinando também as artes e os ofícios. Furioso, Zeus me acorrentou a uma rocha, onde todos os dias uma águia devorava o meu fígado, que se regenerava durante a noite. Séculos depois, o herói Héracles matou a águia e me libertou.',
+f:'Prometeu significa "aquele que pensa antes", o oposto do seu irmão Epimeteu, "o que pensa depois".'},
+{x:2030,p:18,d:dMed,t:'Medusa e o Escudo de Atena',s:'A ilha das Górgonas',
+b:'Antes de ser um monstro, Medusa era uma jovem mortal que servia como sacerdotisa no templo de Atena. Em algumas versões do mito, o deus Poseidon a agrediu dentro do templo, e Atena, em vez de punir o deus, transformou os cabelos de Medusa em serpentes e fez seu olhar virar em pedra quem a encarasse. Exilada, ela foi viver numa ilha distante, junto das irmãs Górgonas. Anos depois, o rei Polidecto, querendo se livrar de mim, exigiu a cabeça de Medusa. Recebi de Atena um escudo polido como espelho, de Hermes sandálias aladas e uma foice, e de Hades um elmo de invisibilidade. Na ilha, olhei só para o reflexo no escudo e cortei a cabeça de Medusa. Do pescoço dela nasceram o cavalo alado Pégaso e o gigante Crisaor. Atena colocou a cabeça no seu escudo, e hoje muita gente vê Medusa como uma figura trágica, punida por algo que não foi culpa dela.',
+f:'A palavra "gorgona" vem do grego "gorgós", que significa "terrível".'}];
+const NP=[
+{ch:'ar',n:'Ariadne',r:'Princesa de Creta',nx:26,k:'#f0c8a0',h:'#3a2418',c:'#7b4fa8',c2:'#f2c14e',lg:1,
+ i:'Saudações, aluno! Eu sou Ariadne, princesa de Creta. Fui eu quem deu o novelo de fio ao herói Teseu, e hoje vou contar a história do Minotauro.',
+ q:'Quem construiu o Labirinto onde o Minotauro foi preso?',o:['Teseu','Dédalo','Hefesto'],a:1,e:'O inventor Dédalo construiu o Labirinto a mando do rei Minos.'},
+{ch:'he',n:'Hermes',r:'Mensageiro dos deuses',nx:28,k:'#e8b894',h:'#c89a50',c:'#7fc4e8',c2:'#f4ecd8',
+ i:'Olá, aluno! Sou Hermes, o mensageiro dos deuses, e levo os recados de Zeus, meu pai, pelo mundo. Hoje a aula é sobre ele!',
+ q:'Como Zeus, Poseidon e Hades dividiram o mundo após vencer os titãs?',o:['Zeus: céu · Poseidon: mares · Hades: submundo','Zeus: mares · Poseidon: céu · Hades: submundo','Zeus: submundo · Poseidon: mares · Hades: céu'],a:0,e:'Zeus ficou com o céu, Poseidon com os mares e Hades com o submundo.'},
+{ch:'at',n:'Atena',r:'Deusa da sabedoria',nx:24,k:'#f4d0b0',h:'#2a1a14',c:'#eeeef6',c2:'#2f6fb0',lg:1,
+ i:'Bem-vindo, aluno! Eu sou Atena, deusa da sabedoria. Ajudei a vestir Pandora no dia em que ela foi criada, então conheço bem esta história.',
+ q:'O que ficou preso no fundo da jarra de Pandora?',o:['A Coragem','A Sorte','A Esperança'],a:2,e:'Só a Esperança (Elpis) permaneceu dentro da jarra.'},
+{ch:'od',n:'Odisseu',r:'Rei de Ítaca',nx:40,k:'#c88c64',h:'#4a3020',c:'#d8a458',c2:'#8c2424',bd:'#4a3020',
+ i:'Saudações, aluno! Sou Odisseu, rei de Ítaca e o mais astuto dos gregos. Hoje vou contar o meu plano mais famoso.',
+ q:'Quem teve a ideia de construir o Cavalo de Troia?',o:['Aquiles','Odisseu','Menelau'],a:1,e:'A ideia foi de Odisseu, famoso por sua astúcia.'},
+{ch:'pr',n:'Prometeu',r:'O titã do fogo',nx:24,k:'#d9a37a',h:'#5a2a18',c:'#d86a2a',c2:'#f2c14e',bd:'#5a2a18',
+ i:'Olá, aluno! Eu sou Prometeu, o titã que deu o fogo à humanidade. Hoje a aula é sobre a minha história.',
+ q:'Qual foi o castigo de Prometeu por roubar o fogo?',o:['Foi transformado em pedra','Foi acorrentado e uma águia devorava seu fígado','Foi preso no Labirinto de Creta'],a:1,e:'Acorrentado a uma rocha, ele sofria todos os dias com a águia, até Héracles libertá-lo.'},
+{ch:'od',n:'Perseu',r:'Herói de Argos',nx:40,k:'#d8a47a',h:'#2a1a14',c:'#d8d8e8',c2:'#2f6fb0',
+ i:'Saudações, aluno! Sou Perseu, filho de Zeus. Hoje vou contar a lenda de Medusa, a Górgona que eu enfrentei.',
+ q:'Que presente de Atena permitiu a Perseu olhar Medusa sem virar pedra?',o:['Um escudo polido como espelho','Um elmo de invisibilidade','Sandálias aladas'],a:0,e:'Perseu viu apenas o reflexo de Medusa no escudo polido de Atena.'}];
+S.forEach((s,i)=>Object.assign(s,NP[i]));
+let cx=0,t=0,cur=null,near=null,ended=0,K={},TR=[],chk=[14,131];
+const P={x:16,y:132,w:6,h:8,vx:0,vy:0,f:1,coy:0,jb:0,dq:0,dT:0,dvx:0,dvy:0,dashes:1};
+const R=(x,y,w,h,c)=>{g.fillStyle=c;g.fillRect(Math.round(x-cx),Math.round(y),w,h)};
+const ov=r=>P.x<r.x+r.w&&P.x+P.w>r.x&&P.y<r.y+r.h&&P.y+P.h>r.y;
+function mv(dx,dy){
+ P.x+=dx;for(const r of PL)if(dx&&ov(r)){P.x=dx>0?r.x-P.w:r.x+r.w;P.vx=0}
+ P.y+=dy;for(const r of PL)if(dy&&ov(r)){if(dy>0){P.y=r.y-P.h;P.vy=0}else{P.y=r.y+r.h;P.vy=0}}
+}
+function upd(){
+ const ix=(K.r?1:0)-(K.l?1:0),iy=(K.dn?1:0)-(K.u?1:0),held=K.j||K.u;
+ P.y++;const on=PL.some(ov);P.y--;
+ if(on){P.coy=6;if(P.dT<=0)P.dashes=1;
+  const r=PL.find(r=>Math.abs(P.y+P.h-r.y)<1.5&&P.x+P.w>r.x&&P.x<r.x+r.w);if(r){safe=[r.x+r.w/2-3,r.y-P.h-1];if(r.w>=170&&chk[0]!=r.x+14){chk=[r.x+14,r.y-P.h-1];save()}}}
+ else if(P.coy>0)P.coy--;
+ if(P.jb>0)P.jb--;if(P.dq>0)P.dq--;if(ix)P.f=ix;
+ if(P.dT>0){P.dT--;TR.push([P.x,P.y,8]);mv(P.dvx,P.dvy);if(!P.dT){P.vx=P.dvx*.45;P.vy=P.dvy*.45}}
+ else if(P.dq&&P.dashes){let dx=ix,dy=iy;if(!dx&&!dy)dx=P.f;const l=Math.hypot(dx,dy);
+  P.dvx=dx/l*3.8;P.dvy=dy/l*3.8;P.dT=8;P.dashes=CFG.as?1:0;P.dq=0;P.vx=P.vy=0}
+ else{
+  P.vx+=(ix*(CFG.as?1.4:1.6)-P.vx)*(on?.3:.18);
+  P.vy=Math.min(P.vy+((held&&Math.abs(P.vy)<.7)?.14:.3),4.6);
+  if(P.jb&&P.coy){P.vy=CFG.as?-4.8:-4.4;P.jb=P.coy=0}
+  if(!held&&P.vy<-1.8)P.vy=-1.8;
+  mv(P.vx,P.vy);
+ }
+ if(P.y>230){const sp=CFG.as?safe:chk;P.x=sp[0];P.y=sp[1];P.vx=P.vy=0;P.dT=0;P.dashes=1;say('Você caiu e voltou para '+(CFG.as?'a última plataforma':'o último ponto seguro')+'.')}
+ near=S.find(s=>P.x+3>s.x-26&&P.x+3<s.x+s.nx+26&&Math.abs(P.y+P.h-PL[s.p].y)<4)||null;
+ if(near!=lastNear){lastNear=near;if(near)say('Você está perto de '+near.n+', '+near.r+'. Aperte '+kn(KB.e[0])+' para conversar.')}
+ if(P.x<2100)ended=0;if(P.x>2180&&!ended){ended=1;const n=S.filter(q=>q.seen).length;
+  $('en').textContent='Você chegou ao Templo e assistiu a '+n+' de 6 aulas. '+(n<6?'Que tal voltar para as aulas que faltam? ':'')+'Os gregos antigos usavam essas histórias para explicar o mundo e a natureza humana, e elas continuam inspirando livros, filmes e jogos. Obrigado por jogar e continue curioso: há muitos outros deuses, heróis e monstros esperando por você.'+(n?' Antes de ir, que tal testar o que você aprendeu?':'');$('eq').hidden=!n;$('eq').textContent='Fazer o quiz ('+n+')';
+  $('ed').hidden=false;K={}}
+}
+/* ---------- desenho ---------- */
+function dMino(x,b){const c='#c98a4b',d='#8f5a2a',h='#f4e7c8';
+ R(x-11,b-5,22,5,'#6b6590');R(x-11,b-5,22,1,'#9a93c4');
+ R(x-6,b-12,4,7,c);R(x+2,b-12,4,7,c);R(x-7,b-23,14,11,c);R(x-7,b-23,3,11,d);R(x-10,b-22,3,9,c);R(x+7,b-22,3,9,c);
+ R(x-5,b-30,10,8,c);R(x-5,b-30,2,8,d);R(x-8,b-36,3,7,h);R(x+5,b-36,3,7,h);R(x-6,b-31,2,2,h);R(x+4,b-31,2,2,h);
+ R(x-3,b-26,6,3,'#e0b078');R(x-3,b-28,2,2,'#ff3b3b');R(x+1,b-28,2,2,'#ff3b3b')}
+function dZeus(x,b){const m='#fbf6e8',s='#d2c4a2',f=(t>>3)&1;
+ R(x-14,b-4,28,4,s);R(x-12,b-8,24,4,m);R(x-9,b-30,18,22,m);R(x-9,b-30,3,22,s);R(x-12,b-18,3,10,s);R(x+9,b-18,3,10,s);
+ R(x-9,b-33,18,3,'#f2c14e');R(x-6,b-28,12,16,'#3b2f7a');
+ R(x+1,b-27+f,4,6,'#ffe14a');R(x-2,b-22+f,4,6,'#ffe14a');R(x+1,b-17+f,3,4,'#fff6a8')}
+function dPan(x,b){const c='#c8683a',d='#8a3f1f',l='#e89a60';
+ R(x-5,b-3,10,3,d);R(x-8,b-8,16,5,c);R(x-10,b-16,20,8,c);R(x-8,b-20,16,4,c);R(x-4,b-24,8,4,d);R(x-6,b-26,12,2,l);
+ R(x-10,b-16,3,8,d);R(x-8,b-12,16,1,l);
+ for(let i=0;i<4;i++){const y=b-28-((t/2+i*14)%30);R(x+Math.sin((t+i*40)/14)*5+(i-1.5)*3,y,2,2,i%2?'#c48cff':'#ff9ad0')}}
+function dHorse(x,b){const c='#b9733a',d='#7a4520';
+ R(x-13,b-9,4,9,d);R(x-6,b-9,3,9,c);R(x+3,b-9,3,9,d);R(x+9,b-9,4,9,c);
+ R(x-14,b-20,28,11,c);R(x-14,b-11,28,2,d);R(x-10,b-18,2,6,d);R(x+6,b-18,2,6,d);R(x-4,b-17,6,6,'#3b1f0e');
+ R(x+9,b-30,6,11,c);R(x+12,b-34,9,6,c);R(x+19,b-32,3,4,d);R(x+12,b-37,2,3,d);R(x+7,b-32,2,10,d);R(x+16,b-33,2,2,'#1b1038');R(x-17,b-19,3,8,d)}
+function dProm(x,b){const m='#fbf6e8',s='#d2c4a2',f=((t>>2)%3)*2;
+ R(x-8,b-4,16,4,s);R(x-4,b-18,8,14,m);R(x-4,b-18,2,14,s);R(x-8,b-22,16,4,m);R(x-7,b-26,14,4,'#6b6590');
+ R(x-5,b-34,10,8,'#e8432a');R(x-4,b-37-f,8,11+f,'#ff8c1a');R(x-2,b-39-f,4,9+f,'#ffe14a')}
+function dMed(x,b){R(x-8,b-4,16,4,'#d2c4a2');R(x-5,b-12,10,8,'#fbf6e8');R(x-6,b-24,12,12,'#7fbf6a');R(x-4,b-20,2,2,'#ffe14a');R(x+2,b-20,2,2,'#ffe14a');R(x-2,b-16,4,1,'#2a4a2a');
+ for(let i=0;i<5;i++){const w=Math.sin(t/8+i*1.3)*2;R(x-9+i*4+w,b-33-(i%2)*3,2,10,'#2f6a3a');R(x-9+i*4+w,b-34-(i%2)*3,2,2,'#ffe14a')}}
+/* cenário */
+function mt(par,base,amp,col,f){g.fillStyle=col;for(let x=0;x<W;x+=2){const wx=x+cx*par,h=base+amp*(Math.sin(wx*f)+.6*Math.sin(wx*f*2.3+1));g.fillRect(x,Math.round(H-h),2,h+1)}}
+function cloud(x,y){g.fillStyle='#fff';g.fillRect(x+6,y,14,4);g.fillRect(x,y+4,30,5);g.fillRect(x+10,y-2,8,3);g.fillStyle='#d6e8f6';g.fillRect(x+2,y+9,26,2)}
+function acro(x0){const b=H-46;
+ for(let dx=-64;dx<=64;dx+=2){const h=Math.min(34,(64-Math.abs(dx))*1.1);g.fillStyle=dx<-20?'#b9a47f':'#cfba92';g.fillRect(x0+dx,b-h,2,h+46)}
+ const y=b-34;g.fillStyle='#f6efdc';for(let i=0;i<8;i++)g.fillRect(x0-20+i*6,y-13,3,13);
+ g.fillRect(x0-23,y-16,47,3);g.fillRect(x0-18,y-19,38,3);g.fillRect(x0-12,y-22,26,3);g.fillRect(x0-5,y-25,12,3)}
+function city(){const k0=Math.floor(cx*.5/28)-1;
+ for(let k=k0;k<k0+14;k++){const a=Math.abs(k),w=20+(a*53%3)*4,h=46+(a*37%5)*9,x=Math.round(k*28-cx*.5),y=H-h;
+  g.fillStyle='#f7f1e3';g.fillRect(x,y,w,h);g.fillStyle='#d9d0bc';g.fillRect(x+w-4,y,4,h);
+  g.fillStyle=a%3?'#2f6fb0':'#c8623a';g.fillRect(x-1,y-2,w+2,3);
+  g.fillStyle='#6a86a8';g.fillRect(x+4,y+8,3,5);g.fillRect(x+w-10,y+8,3,5);g.fillRect(x+4,y+22,3,5)}}
+function bg(){
+ ['#4aa8e8','#66b9ee','#87caf3','#a9daf6','#c9e8f8','#e6f3ee'].forEach((c,i)=>{g.fillStyle=c;g.fillRect(0,i*30,W,30)});
+ g.fillStyle='#fff3a8';for(let d=-14;d<=14;d++){const w=Math.floor(Math.sqrt(196-d*d));g.fillRect(250-w-(cx*.02|0),32+d,w*2,1)}
+ g.fillStyle='#ffe25a';for(let d=-10;d<=10;d++){const w=Math.floor(Math.sqrt(100-d*d));g.fillRect(250-w-(cx*.02|0),32+d,w*2,1)}
+ [[20,18,1],[130,40,.7],[220,12,1.2],[300,44,.8],[400,24,1],[520,36,.6]].forEach(([x,y,v])=>cloud((((x-cx*.1+t*.04*v)%640)+640)%640-60|0,y));
+ mt(.12,64,8,'#b9d9c3',.01);
+ for(let k=0;k<4;k++){const x0=k*560+110-cx*.25;if(x0>-90&&x0<W+90)acro(x0)}
+ mt(.3,40,8,'#9ccb8a',.02);city()}
+function plats(){PL.forEach(r=>{const x=Math.round(r.x-cx);if(x>W||x+r.w<0)return;
+ g.fillStyle='#d9c294';g.fillRect(x,r.y,r.w,H-r.y);g.fillStyle='#c4a972';
+ for(let y=r.y+10;y<H;y+=8)g.fillRect(x,y,r.w,1);
+ g.fillStyle='#fbf6e8';g.fillRect(x,r.y,r.w,3);g.fillStyle='#d2c4a2';g.fillRect(x,r.y+3,r.w,1);
+ g.fillStyle='#2f6fb0';for(let k=3;k<r.w-5;k+=8){g.fillRect(x+k,r.y+6,4,1);g.fillRect(x+k,r.y+6,1,3);g.fillRect(x+k,r.y+8,4,1)}})}
+const TREES=[[40,0,0],[205,0,1],[420,3,1],[548,3,0],[750,6,0],[885,6,1],[1150,10,1],[1300,10,0],[1575,14,0],[1710,14,1]];
+function tree(x,b,k){if(k){R(x-5,b-3,10,3,'#8a8a96');R(x-3,b-20,6,17,'#a8a8b4');R(x-3,b-20,2,17,'#8a8a96');R(x-2,b-26,4,6,'#a8a8b4');R(x-3,b-27,6,2,'#8a8a96');R(x-6,b-18,3,2,'#a8a8b4');R(x+3,b-24,2,8,'#a8a8b4')}
+ else{R(x-1,b-12,3,12,'#7a5230');R(x-9,b-24,18,8,'#8fae7a');R(x-6,b-28,12,6,'#a3c18c');R(x-7,b-18,14,4,'#7b9a68');R(x+2,b-22,3,2,'#2f5a38')}}
+function npc(c,x,y,o,l){const F=(a,b,w,h,col)=>{c.fillStyle=col;c.fillRect(x+a,y+b,w,h)},h=o.ch;
+ if(h=='od')F(2,11,11,9,'#8c2424');
+ F(4,19,2,2,o.k);F(9,19,2,2,o.k);F(3,21,3,1,'#6a4a2a');F(9,21,3,1,'#6a4a2a');
+ F(3,11,9,8,o.c);F(2,17,11,2,o.c);F(3,11,9,1,o.c2);F(3,15,9,1,o.c2);F(2,18,11,1,o.c2);
+ F(1,12,2,5,o.c);F(12,12,2,5,o.c);F(1,17,2,1,o.k);F(12,17,2,1,o.k);
+ if(o.lg){F(2,4,2,11,o.h);F(11,4,2,11,o.h)}
+ F(3,2,9,9,o.k);F(2,0,11,5,o.h);F(2,3,2,3,o.h);F(11,3,2,3,o.h);
+ F(4,8,1,1,'#e8907a');F(11,8,1,1,'#e8907a');F(5+l,7,1,2,'#2a1a14');F(9+l,7,1,2,'#2a1a14');
+ if(o.bd){F(3,9,9,3,o.bd);F(4,12,7,1,o.bd)}else F(7,9,2,1,'#b0604a');
+ if(h=='ar'){F(2,3,11,1,'#f2c14e');F(7,2,1,1,'#fff6a8');F(12,15,3,3,'#e8453c');F(14,18,1,3,'#e8453c')}
+ if(h=='he'){F(14,3,1,17,'#8a5a2b');F(13,2,2,2,'#f2c14e');F(13,8,1,1,'#6bbf5a');F(3,0,9,4,'#c8963e');F(1,3,13,2,'#c8963e');F(0,1,3,1,'#fff');F(0,2,2,1,'#dfe9ff');F(12,1,3,1,'#fff');F(13,2,2,1,'#dfe9ff')}
+ if(h=='at'){F(14,1,1,20,'#8a5a2b');F(13,0,2,3,'#dfe6f0');F(2,1,11,4,'#d2a64a');F(4,0,7,2,'#c0392b');F(2,4,2,6,'#d2a64a');F(11,4,2,6,'#d2a64a');F(0,12,4,6,'#b8892e');F(1,13,2,1,'#fff');F(1,15,2,1,'#fff')}
+ if(h=='od'){F(3,2,9,2,'#a8a8b4');F(5,0,5,3,'#a8a8b4');F(3,11,9,2,'#8c2424');F(12,15,1,4,'#c9c9d0');F(11,15,3,1,'#f2c14e')}
+ if(h=='pr'){const a=(t>>2)&1;F(14,10,1,10,'#6a4a2a');F(13,6+a,2,4-a,'#ff8c1a');F(14,5+a,1,2,'#ffe14a');F(1,16,2,1,'#8a8a96');F(12,16,2,1,'#8a8a96');F(0,17,1,3,'#8a8a96')}}
+function teacher(s){const b=PL[s.p].y,x=Math.round(s.x+s.nx-7-cx),l=Math.max(-1,Math.min(1,Math.sign(P.x-(s.x+s.nx))));
+ g.fillStyle='rgba(0,0,0,.18)';g.fillRect(x+2,b-1,11,2);npc(g,x,b-22,s,l)}
+function temple(){const m='#fbf6e8',s='#d2c4a2',b=128,x=2120;
+ R(x-6,b-4,92,4,s);R(x-2,b-8,84,4,m);
+ for(let i=0;i<6;i++){R(x+i*15,b-38,6,30,m);R(x+i*15,b-38,2,30,s)}
+ R(x-2,b-42,84,4,s);R(x+2,b-46,76,4,m);R(x+10,b-50,60,4,s);R(x+20,b-54,40,4,m);R(x+30,b-58,20,4,s);
+ g.textAlign='center';g.font='bold 10px monospace';g.fillStyle='#1b1038';g.fillText('OBRIGADO POR JOGAR!',x+41-cx+1,b-84+1);
+ g.fillStyle='#f2c14e';g.fillText('OBRIGADO POR JOGAR!',x+41-cx,b-84);
+ g.font='7px monospace';g.fillStyle='#fff';g.fillText('Mitologia Grega · fim da jornada',x+41-cx,b-72)}
+function mark(s){const b=PL[s.p].y,nx=s.x+s.nx,y=b-42+Math.sin(t/12)*2;
+ if(s.seen){[[-3,4],[-1,6],[1,4],[3,2],[5,0]].forEach(([a,c])=>R(nx+a,y+c,2,2,'#4fc86a'))}
+ else{R(nx-1,y,3,6,'#ffd23a');R(nx-1,y+8,3,2,'#ffd23a')}
+ if(near==s&&!cur){g.textAlign='center';g.font='bold 8px monospace';g.fillStyle='#5a2a0b';g.fillText('[E] conversar',nx-cx+1,b-52+1);g.fillStyle='#fff';g.fillText('[E] conversar',nx-cx,b-52)}}
+function player(){const x=P.x,y=P.y,f=P.f,hc=P.dashes>0?'#ff4d6d':'#4fd8ff',on=PL.some(r=>Math.abs(P.y+P.h-r.y)<1.5&&P.x+P.w>r.x&&P.x<r.x+r.w);
+ TR.forEach(a=>{g.globalAlpha=a[2]/12;R(a[0],a[1],6,8,'#4fd8ff');a[2]--});g.globalAlpha=1;TR=TR.filter(a=>a[2]>0);
+ const w=on&&Math.abs(P.vx)>.4?(t>>2)&1:0;
+ R(x-1,y-1,8,3,hc);R(f>0?x-3:x+6,y+(w?1:0),3,2,hc);R(x,y+2,6,3,'#ffcba4');R(f>0?x+4:x+1,y+3,1,1,'#1b1038');
+ R(x,y+5,6,2,'#3b6fd8');R(x+1+w,y+7,2,1,'#2a2a6a');R(x+3-w,y+7,2,1,'#2a2a6a');
+ const by=y-9,d='#1b1038';if(P.dashes>0){R(x,by,6,6,d);R(x+1,by+1,4,4,'#ffe14a')}else{R(x,by,6,1,d);R(x,by+5,6,1,d);R(x,by,1,6,d);R(x+5,by,1,6,d)}}
+function draw(){
+ cx+=(Math.max(0,Math.min(WW-W,P.x-W/2+P.f*18))-cx)*(CFG.rm?1:.1);
+ bg();plats();temple();TREES.forEach(([x,p,k])=>tree(x,PL[p].y,k));S.forEach(s=>{s.d(s.x,PL[s.p].y);teacher(s);mark(s)});player();hintArrow()}
+/* modais e entrada */
+let pg=[],pi=0,tw=0,full='';
+function pages(s){const q=s.b.match(/[^.!?]+[.!?]+["”]?\s*/g)||[s.b],o=[s.i];
+ for(let i=0;i<q.length;i+=2)o.push(q.slice(i,i+2).join('').trim());
+ o.push('Curiosidade: '+s.f,'Fim da aula! Pode seguir sua jornada e visitar os outros professores.');return o}
+function typeP(){full=pg[pi];let i=0;clearInterval(tw);$('mb').textContent='';$('ml').textContent=full;
+ $('pn').textContent='Página '+(pi+1)+'/'+pg.length;$('mc').textContent=pi<pg.length-1?'Próximo ▶':'Terminar aula';$('mp').hidden=pi==0;
+ const sp=CFG.sp=='i'?null:CFG.sp=='l'?[1,55]:[2,22];if(!sp){$('mb').textContent=full;return}
+ tw=setInterval(()=>{i+=sp[0];$('mb').textContent=full.slice(0,i);if(i>=full.length)clearInterval(tw)},sp[1])}
+function nextP(){if($('mb').textContent.length<full.length){clearInterval(tw);$('mb').textContent=full;return}
+ if(pi<pg.length-1){pi++;typeP()}else closeS()}
+function openS(s){cur=s;s.seen=1;save();pg=pages(s);pi=0;$('nm').textContent=s.n+' · '+s.r;
+ $('mt').textContent='Aula '+(S.indexOf(s)+1)+' de 6: '+s.t;$('ms').textContent=s.s;
+ const pc=$('pt').getContext('2d');pc.fillStyle='#bfe3f3';pc.fillRect(0,0,15,22);npc(pc,0,0,s,0);
+ $('cnt').textContent=S.filter(q=>q.seen).length;$('md').hidden=false;K={};typeP()}
+function closeS(){clearInterval(tw);$('md').hidden=true;cur=null}
+$('mc').onclick=nextP;$('mx').onclick=closeS;$('md').onclick=e=>{if(e.target==$('md'))closeS()};
+$('ec').onclick=()=>{$('ed').hidden=true};$('er').onclick=()=>{ls.del('olimpo-save');location.reload()};
+const wp=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)/r.width*W+cx,(e.clientY-r.top)/r.height*H]};
+const hit=([mx,my])=>S.find(s=>mx>s.x-20&&mx<s.x+s.nx+8&&my>PL[s.p].y-44&&my<PL[s.p].y);
+cv.onclick=e=>{if(!cur&&$('ed').hidden){const s=hit(wp(e));s&&openS(s)}};
+cv.onmousemove=e=>{cv.style.cursor=hit(wp(e))?'pointer':'default'};
+const OVS=['md','ed','qz','st','ti'].map($),ACT=[['l','Esquerda'],['r','Direita'],['u','Cima (pula)'],['j','Pular'],['d','Dash'],['dn','Baixo'],['e','Conversar'],['h','Dica']];
+const KB0={l:['ArrowLeft','KeyA'],r:['ArrowRight','KeyD'],u:['ArrowUp','KeyW'],dn:['ArrowDown','KeyS'],j:['Space','KeyZ'],d:['KeyX','KeyC','ShiftLeft','ShiftRight'],e:['KeyE'],h:['KeyH']};
+const PRE={p:KB0,l:{l:['KeyA'],r:['KeyD'],u:['KeyW'],dn:['KeyS'],j:['Space'],d:['ShiftLeft','KeyQ'],e:['KeyE'],h:['KeyH']},r:{l:['ArrowLeft'],r:['ArrowRight'],u:['ArrowUp'],dn:['ArrowDown'],j:['KeyK'],d:['KeyL'],e:['KeyJ'],h:['KeyI']}};
+const ls={get:k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
+const CFG=Object.assign({hc:0,lf:0,as:0,ts:1,sp:'n',rm:matchMedia('(prefers-reduced-motion:reduce)').matches?1:0,KB:JSON.parse(JSON.stringify(KB0))},ls.get('olimpo-cfg')||{});
+const KB=CFG.KB,save=()=>ls.set('olimpo-save',{seen:S.map(q=>!!q.seen),chk});
+const kn=c=>({Space:'Espaço',ArrowLeft:'Seta ←',ArrowRight:'Seta →',ArrowUp:'Seta ↑',ArrowDown:'Seta ↓',ShiftLeft:'Shift',ShiftRight:'Shift'}[c]||c.replace(/^Key|^Digit/,''));
+const act=c=>Object.keys(KB).find(k=>KB[k].includes(c));
+let cap=0,lastNear=null,sayT,safe=[14,131];
+const say=m=>{const l=$('lv');l.textContent='';clearTimeout(sayT);sayT=setTimeout(()=>{l.textContent=m},60)};
+{const d=ls.get('olimpo-save');if(d&&d.seen){d.seen.forEach((v,i)=>{S[i].seen=v});chk=d.chk;P.x=chk[0];P.y=chk[1];safe=chk.slice();$('cnt').textContent=S.filter(q=>q.seen).length}}
+function applyCfg(){const R=document.documentElement;R.classList.toggle('hc',!!CFG.hc);R.classList.toggle('lf',!!CFG.lf);R.style.setProperty('--ts',CFG.ts);
+ ['hc','lf','rm','as'].forEach(k=>{$('o-'+k).checked=!!CFG[k]});$('o-ts').value=CFG.ts;$('o-sp').value=CFG.sp;ls.set('olimpo-cfg',CFG)}
+['hc','lf','rm','as'].forEach(k=>{$('o-'+k).onchange=e=>{CFG[k]=e.target.checked?1:0;applyCfg()}});
+$('o-ts').onchange=e=>{CFG.ts=+e.target.value;applyCfg()};$('o-sp').onchange=e=>{CFG.sp=e.target.value;applyCfg()};
+function kbUI(){const k=$('kb');k.innerHTML='';ACT.forEach(([a,n])=>{const b=document.createElement('button');b.dataset.a=a;b.textContent=n+': '+(KB[a].map(kn).join(' / ')||'—');
+ b.onclick=()=>{cap=a;b.textContent=n+': pressione uma tecla…';say('Pressione a nova tecla para '+n+'. Esc cancela.')};k.appendChild(b)})}
+['p','l','r'].forEach(k=>{$('k'+k).onclick=()=>{Object.assign(KB,JSON.parse(JSON.stringify(PRE[k])));ls.set('olimpo-cfg',CFG);kbUI();say('Teclas atualizadas.')}});
+$('bm').onclick=()=>{$('st').hidden=false};$('sx').onclick=()=>{$('st').hidden=true};
+$('sv').onclick=()=>{if(confirm('Apagar o progresso salvo e reiniciar o jogo?')){ls.del('olimpo-save');location.reload()}};
+$('mp').onclick=prevP;$('th').addEventListener('pointerdown',()=>hint());
+function prevP(){if(pi>0){pi--;typeP()}}
+let hT=null,hU=0,hTO;
+function hint(){const n=S.find(q=>!q.seen);let m,tg;
+ if(!n){m='Você já assistiu a todas as aulas. Siga em frente até o templo!';tg={x:2161,y:70}}
+ else{const d=Math.round((n.x+n.nx-P.x)/10),dy=PL[n.p].y-(P.y+P.h),a=Math.abs(d);
+  m='Dica: '+n.n+' ('+n.r+') está '+(a<4?'logo aqui perto':(d>0?'à frente →':'← atrás')+', a cerca de '+a+' passos')+(dy<-4?', em uma plataforma mais alta ↑':dy>4?', em uma plataforma mais baixa ↓':'')+'.';
+  tg={x:n.x+n.nx,y:PL[n.p].y-62}}
+ say(m);hT=tg;hU=performance.now()+5000;const e=$('ht');e.textContent=m;e.hidden=false;clearTimeout(hTO);hTO=setTimeout(()=>{e.hidden=true;hT=null},5000)}
+function hintArrow(){if(!hT||performance.now()>hU)return;const sx=Math.round(hT.x-cx),b=Math.sin(t/6)*3;g.fillStyle='#ffd23a';g.strokeStyle='#5a2a0b';g.lineWidth=1;g.beginPath();
+ if(sx<10){g.moveTo(6,90);g.lineTo(18,82);g.lineTo(18,98)}else if(sx>W-10){g.moveTo(W-6,90);g.lineTo(W-18,82);g.lineTo(W-18,98)}else{const y=hT.y+b;g.moveTo(sx,y+12);g.lineTo(sx-7,y);g.lineTo(sx+7,y)}
+ g.closePath();g.fill();g.stroke()}
+[['md','mt'],['ed','eh'],['qz','qq'],['st','sth'],['ti','tt']].forEach(([o,l])=>{const b=$(o).firstElementChild;b.tabIndex=-1;b.setAttribute('role','dialog');b.setAttribute('aria-modal','true');b.setAttribute('aria-labelledby',l)});
+$('ed').firstElementChild.setAttribute('aria-describedby','en');
+new MutationObserver(ms=>ms.forEach(m=>{const o=m.target;if(!OVS.includes(o))return;if(!o.hidden)o.firstElementChild.focus();else if(OVS.every(x=>x.hidden)&&$('rd').hidden)cv.focus()})).observe(document.getElementById('w'),{attributes:true,subtree:true,attributeFilter:['hidden']});
+/* modo leitura */
+function buildRD(){const h=['<h1 tabindex="-1">Olimpo Pixelado: aulas de mitologia grega</h1><p>Esta é a versão em texto do jogo. Leia as seis aulas e depois responda ao quiz.</p><button id="rb">Voltar ao jogo</button>'];
+ S.forEach((q,i)=>h.push('<section><h2>Aula '+(i+1)+' de 6: '+q.t+'</h2><p><strong>'+q.n+'</strong>, '+q.r.toLowerCase()+'. '+q.s+'.</p>'+pages(q).slice(0,-1).map(x=>'<p>'+x+'</p>').join('')+'</section>'));
+ h.push('<section><h2>Quiz</h2>');
+ S.forEach((q,i)=>h.push('<fieldset><legend>'+(i+1)+'. '+q.q+'</legend>'+q.o.map((o,j)=>'<label><input type="radio" name="q'+i+'" value="'+j+'"> '+String.fromCharCode(65+j)+') '+o+'</label>').join('')+'<p id="f'+i+'" role="status"></p></fieldset>'));
+ h.push('<button id="rk">Corrigir respostas</button><p id="rs" role="status"></p></section><button id="rb2">Voltar ao jogo</button>');
+ $('rc').innerHTML=h.join('');$('rb').onclick=$('rb2').onclick=closeRD;
+ $('rk').onclick=()=>{let ok=0;S.forEach((q,i)=>{const v=document.querySelector('input[name=q'+i+']:checked'),c=v&&+v.value==q.a,r='Resposta correta: '+String.fromCharCode(65+q.a)+') '+q.o[q.a]+'. ';if(c)ok++;$('f'+i).textContent=(c?'✔ Correto! ':v?'✖ Incorreto. '+r:'Sem resposta. '+r)+q.e});$('rs').textContent='Você acertou '+ok+' de 6.'}}
+function openRD(){if(cur)closeS();OVS.forEach(o=>{o.hidden=true});K={};document.body.classList.add('rm');$('rd').hidden=false;$('rc').querySelector('h1').focus()}
+function closeRD(){document.body.classList.remove('rm');$('rd').hidden=true;cv.focus()}
+$('bl').onclick=openRD;$('sk').onclick=e=>{e.preventDefault();openRD()};
+buildRD();applyCfg();kbUI();
+S.forEach(q=>{const d=document.createElement('div'),c=document.createElement('canvas');d.setAttribute('role','listitem');c.width=15;c.height=22;c.setAttribute('aria-hidden','true');
+ const x=c.getContext('2d');x.fillStyle='#bfe3f3';x.fillRect(0,0,15,22);npc(x,0,0,q,0);d.appendChild(c);d.appendChild(document.createTextNode(q.n));d.title=q.n+', '+q.r.toLowerCase();$('tg').appendChild(d)});
+$('tp').onclick=()=>{$('ti').hidden=true;say('O jogo começou. Use as setas para andar e a tecla H para pedir uma dica.')};
+$('ti').firstElementChild.focus();
+/* teclado */
+addEventListener('keydown',e=>{
+ if(!$('rd').hidden)return;
+ if(cap){e.preventDefault();const a=cap;cap=0;if(e.code!='Escape'){for(const k in KB)KB[k]=KB[k].filter(c=>c!=e.code);KB[a]=[e.code];ls.set('olimpo-cfg',CFG);say('Tecla definida: '+kn(e.code))}kbUI();const b=$('kb').querySelector('[data-a='+a+']');if(b)b.focus();return}
+ const op=OVS.find(x=>!x.hidden);
+ if(op){
+  if(e.code=='Tab'){const f=[...op.querySelectorAll('button:not([hidden]),select,input')],i=f.indexOf(document.activeElement);if(f.length&&(e.shiftKey?i<=0:i==f.length-1)){e.preventDefault();f[e.shiftKey?f.length-1:0].focus()}return}
+  if(e.code=='Escape'){e.preventDefault();if(op.id=='md')closeS();else if(op.id=='qz'){op.hidden=true;$('ed').hidden=false}else if(op.id!='ti')op.hidden=true;return}
+  if(op.id=='md'){const onB=document.activeElement instanceof HTMLButtonElement;
+   if(e.code=='ArrowLeft'){e.preventDefault();prevP()}
+   else if(!onB&&(act(e.code)=='e'||e.code=='Enter'||e.code=='Space')){e.preventDefault();if(!e.repeat)nextP()}}
+  return}
+ if(e.code=='Escape'){$('st').hidden=false;return}
+ const k=act(e.code);if(!k)return;e.preventDefault();
+ if(k=='e'){if(near&&!e.repeat)openS(near);return}
+ if(k=='h'){hint();return}
+ if(!e.repeat){if(k=='j'||k=='u')P.jb=6;if(k=='d')P.dq=6}K[k]=1});
+addEventListener('keyup',e=>{const k=act(e.code);if(k)K[k]=0});
+document.querySelectorAll('#tc button').forEach(b=>{const k=b.dataset.k;
+ b.onpointerdown=e=>{e.preventDefault();K[k]=1;if(k=='j')P.jb=6;if(k=='d')P.dq=6};
+ ['pointerup','pointerleave','pointercancel'].forEach(v=>b['on'+v]=()=>{K[k]=0})});
+let qs=[],qi=0,qp=0,qa=0;
+function startQ(){qs=S.filter(s=>s.seen);qi=qp=0;$('ed').hidden=true;$('qz').hidden=false;showQ()}
+function showQ(){const s=qs[qi];qa=0;$('qh').textContent='Pergunta '+(qi+1)+' de '+qs.length+' · '+s.t;$('qq').textContent=s.q;$('qe').textContent='';$('qn').hidden=true;$('qo').innerHTML='';
+ s.o.forEach((o,i)=>{const b=document.createElement('button');b.textContent=String.fromCharCode(65+i)+') '+o;b.onclick=()=>ans(i,b);$('qo').appendChild(b)});$('qz').firstElementChild.focus()}
+function ans(i,b){if(qa)return;qa=1;const s=qs[qi],ok=i==s.a;if(ok)qp++;
+ [...$('qo').children].forEach((x,j)=>{x.className=j==s.a?'ok':(x==b?'no':'');if(j==s.a||x==b)x.textContent=(j==s.a?'✔ ':'✖ ')+x.textContent});
+ $('qe').textContent=(ok?'Correto! ':'Incorreto. ')+s.e;$('qn').hidden=false;$('qn').textContent=qi<qs.length-1?'Próxima ▶':'Ver resultado';$('qn').focus()}
+function result(){const r=qp==qs.length?'Oráculo de Delfos':qp>=qs.length/2?'Herói de Atenas':'Aprendiz de Atenas';
+ $('qh').textContent='Resultado final';$('qq').textContent='Você acertou '+qp+' de '+qs.length+'!';$('qo').innerHTML='';
+ $('qe').textContent='Seu título: '+r+'. '+(qp==qs.length?'Os deuses estão orgulhosos de você!':'Converse de novo com os professores e tente outra vez.');$('qn').textContent='Concluir';$('qz').firstElementChild.focus()}
+$('qn').onclick=()=>{if(qi>=qs.length){$('qz').hidden=true;$('ed').hidden=false}else if(qi<qs.length-1){qi++;showQ()}else{qi=qs.length;result()}};
+$('eq').onclick=startQ;
+let last=0,acc=0;
+function loop(ts){const dt=Math.min(ts-last,50);last=ts;if(!CFG.rm)t++;
+ if(OVS.every(x=>x.hidden)&&$('rd').hidden){acc+=dt;while(acc>=16.67){upd();acc-=16.67}}
+ draw();requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+</script></body></html>
